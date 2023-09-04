@@ -1,0 +1,38 @@
+import RPi.GPIO as GPIO
+from time import sleep
+from ubidots import *
+
+## add your servo BOARD PIN number ##
+servo_pin = 11
+
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(servo_pin, GPIO.OUT)
+
+pwm=GPIO.PWM(servo_pin, 50)
+pwm.start(0)
+
+## edit these duty cycle % values ##
+left = 2.5
+neutral = 7.5
+right = 12
+#### that's all folks ####
+
+print("begin test")
+while(True):
+    move_up = get_var("move-up")
+    move_down = get_var("move-down")
+    stop = False
+    
+    if(move_up):
+        print("Move Up - Right continous CW")
+        #send_data("move-down", False)
+        pwm.ChangeDutyCycle(right)
+    elif(move_down):
+        print("Move Down - Left continous CW")
+        #send_data("move-up", False)
+        pwm.ChangeDutyCycle(left)
+    elif(stop or (not move_up and not move_down)):
+        print("Stop")
+        pwm.ChangeDutyCycle(neutral)
+
+GPIO.cleanup()
